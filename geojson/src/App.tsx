@@ -2,50 +2,45 @@ import React, { useMemo, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { Button } from '@mui/material';
+import L from "leaflet";
+import { GeoJsonObject } from 'geojson';
 
 function App() {
-  
   const [geoFile, setGeoFile] = useState<File>();
+  const [geoJson, setGeoJson] = useState<GeoJsonObject | GeoJsonObject[]>();
 
-  async function parseFileToJson(file:File){
-    console.log(JSON.parse(await file.text()))
-
+  function loadMap(){
+    console.log(geoJson);
+    let map = L.map('map').setView([39.74739, -105], 4);
+    var myStyle = {
+      "fillColor": 'white'
+  };
+    L.geoJSON(geoJson, {
+      style: myStyle
+    }).addTo(map)
   }
 
-  function handelFile(selectorFiles:FileList){
+  async function handelFile(selectorFiles:FileList){
     setGeoFile(selectorFiles[0])
-    parseFileToJson(selectorFiles[0])
-    // console.log(geoFile)
-  }
-  function check(){
-    console.log(geoFile);
+    setGeoJson(JSON.parse(await selectorFiles[0].text()));
+    
   }
 
   return (
-    // <div className="App">
-    //   <header className="App-header">
-    //     <img src={logo} className="App-logo" alt="logo" />
-    //     <p>
-    //       Edit <code>src/App.tsx</code> and save to reload.
-    //     </p>
-    //     <a
-    //       className="App-link"
-    //       href="https://reactjs.org"
-    //       target="_blank"
-    //       rel="noopener noreferrer"
-    //     >
-    //       Learn React
-    //     </a>
-    //   </header>
-    // </div>
     <div>
       <Button variant="contained" component="label">
         Upload GeoJson File
         <input hidden accept="file" type="file" onChange={(e)=>handelFile(e.target.files!)}/>
       </Button>
-      <Button onClick={()=>check()}>
+      <Button onClick={()=>loadMap()}>
         Check
       </Button>
+      <div 
+        id="map" 
+        // style={{backgroundColor:"black"}}
+      >
+
+      </div>
     </div>
   );
 }
