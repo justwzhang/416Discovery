@@ -54,18 +54,11 @@ function App() {
       <div >
         <input type="file" onChange={(e) => handleFile(e)} className="inputfile" multiple />
       </div>
-      <MapContainer center={[42.09618442380296, -71.5045166015625]} zoom={7} zoomControl={true}>
-        <LayersControl position='topright'>
-          {/* <BaseLayer checked name='OpenStreetMap.Mapnik'>
-            <TileLayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png" />
-          </BaseLayer> */}
-          {
-            geoData ?
-              <Overlay checked name='Feature group'>
-                <ShapeFile data={geoData} style={style} onEachFeature={onEachFeature} />
-              </Overlay> : null
-          }
-        </LayersControl>
+      <MapContainer style={{ height: "80vh" }} center={[42.09618442380296, -71.5045166015625]} zoom={7} zoomControl={true}>
+        {
+          geoData ?
+            <ShapeFile data={geoData} style={style} onEachFeature={onEachFeature} /> : null
+        }
       </MapContainer>
     </div>
   )
