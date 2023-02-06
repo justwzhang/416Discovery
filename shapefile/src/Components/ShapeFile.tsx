@@ -16,5 +16,4 @@ export default function ShapeFile(props: any) {
     return (
         <GeoJSON key={Math.random()} data={geoJSONData} {...geoJSONProps} />
     )
-
 }
