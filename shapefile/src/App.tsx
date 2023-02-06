@@ -1,3 +1,4 @@
+import JSZip from 'jszip';
 import React, { useState } from 'react';
 import { MapContainer, TileLayer, LayersControl } from 'react-leaflet'
 import ShapeFile from './Components/ShapeFile';
@@ -16,11 +17,26 @@ function App() {
 
   function handleFile(e: any) {
     let reader = new FileReader();
-    let file = e.target.files[0];
-    reader.readAsArrayBuffer(file);
-    reader.onload = function (buffer: any) {
-      setGeoData(buffer.target.result);
-    }
+    let files = e.target.files;
+
+    // load shp and dbf file
+    let zip = new JSZip();
+    Array.from(files).forEach((f: any) => {
+      zip.file(f.name, f);
+    });
+
+    zip.generateAsync({ type: 'blob' }).then((content) => {
+      reader.readAsArrayBuffer(content);
+      reader.onload = function (buffer: any) {
+        setGeoData(buffer.target.result);
+      }
+    });
+
+    // load zip file
+    // reader.readAsArrayBuffer(files[0]);
+    // reader.onload = function (buffer: any) {
+    //   setGeoData(buffer.target.result);
+    // }
   }
 
   function onEachFeature(feature: any, layer: any) {
@@ -36,9 +52,9 @@ function App() {
   return (
     <div>
       <div >
-        <input type="file" onChange={(e) => handleFile(e)} className="inputfile" />
+        <input type="file" onChange={(e) => handleFile(e)} className="inputfile" multiple />
       </div>
-      <MapContainer center={[42.09618442380296, -71.5045166015625]} zoom={2} zoomControl={true}>
+      <MapContainer center={[42.09618442380296, -71.5045166015625]} zoom={7} zoomControl={true}>
         <LayersControl position='topright'>
           {/* <BaseLayer checked name='OpenStreetMap.Mapnik'>
             <TileLayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png" />
