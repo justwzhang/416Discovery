@@ -2,40 +2,41 @@ import React, { useMemo, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { Button } from '@mui/material';
-import L from "leaflet";
+// import L from "leaflet";
 import { GeoJsonObject } from 'geojson';
 import { Opacity } from '@mui/icons-material';
+import { MapContainer, GeoJSON, TileLayer, LayersControl } from 'react-leaflet'
 
 function App() {
   const [geoFile, setGeoFile] = useState<File>();
   const [geoJson, setGeoJson] = useState<any>(); // GeoJsonObject | GeoJsonObject[]
+  const myStyle = {
+    fillColor: 'white',
+    fillOpacity: 1,
+    color:'black',
+  };
   // const [map, setMap] = useState<L.Map>();
   
 
   function onEachFeature(feature:any, layer:any){
+    console.log(layer)
     const countryName = feature.properties.name;
-    let marker = L.marker([feature.properties.label_x, feature.properties.label_y], {opacity: 0.01});
-    marker.bindTooltip(countryName);
-    // console.log(map);
-    // marker.addTo(layer);
-    // console.log(countryName);
     layer.bindPopup(countryName);
+    // console.log(countryName);
+    // layer.on({
+    //   click: (event:any)=>{console.log("click")}
+    // })
   }
 
   function loadMap(){
-    let map = L.map('map').setView([0,0], 0)
+    // let map = L.map('map').setView([0,0], 0)
     // console.log(geoJson?.features);
-    console.log(1)
-    var myStyle = {
-      fillColor: 'white',
-      fillOpacity: 1,
-      color:'black',
-
-  };
-    L.geoJSON(geoJson, {
-      style: myStyle,
-      onEachFeature: onEachFeature,
-      }).addTo(map)
+    // console.log(1)
+    
+    // L.geoJSON(geoJson, {
+    //   style: myStyle,
+    //   onEachFeature: onEachFeature,
+    //   }).addTo(map)
   }
 
   async function handelFile(selectorFiles:FileList){
@@ -53,7 +54,11 @@ function App() {
       <Button onClick={()=>loadMap()}>
         View Map
       </Button>
-      <div id="map"></div>
+      <MapContainer style={{ height: "70vh" }} center={[0, 0]} zoom={0} zoomControl={true}>
+        {
+          geoJson?<GeoJSON data={geoJson} style = {myStyle} onEachFeature={onEachFeature}></GeoJSON>:null
+        }
+      </MapContainer>
     </div>
   );
 }
