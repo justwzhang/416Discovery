@@ -8,6 +8,7 @@ import MapZoom from './components/mapZoomComponent';
 
 
 function App() {
+  // The state variables used
   const [geoJson, setGeoJson] = useState<GeoJsonObject|FeatureCollection>();
   const [newName, setName] = useState<String>(" ");
   const [index, setIndex] = useState<number>(-1);
@@ -19,6 +20,11 @@ function App() {
     weight: 1
   };
 
+  // Called on each layer() to assign a popup name and register both 
+  // click and double click events. The click event overrides the 
+  // native click event that opens a popup and makes it so ctrl must
+  // be pressed to show the popup. Double clicking selects the current
+  // layer being edited
   function onEachFeature(feature:any, layer:any){
     const countryName = feature.properties.name;
     layer.bindPopup(countryName);
@@ -43,6 +49,7 @@ function App() {
     })
   }
 
+  // The handler that parses the input json file
   async function handleFile(selectorFiles:FileList){
     let jsonStringTemp = await selectorFiles[0].text()
     let jsonTemp = JSON.parse(jsonStringTemp)
@@ -50,6 +57,7 @@ function App() {
     setGeoJson(jsonTemp);
   }
 
+  // The handler for name changing from the textbox
   function handleChange(event:any){
     if(event.target.value == ""){
       setName(" ");
@@ -58,6 +66,7 @@ function App() {
     }
   }
 
+  // The handler for pressing enter on the textbox
   function handleNameChange(event:any){
     if(event.key == "Enter" && index != -1){
       let tempGeoJson = JSON.parse(JSON.stringify(geoJson));
@@ -69,10 +78,10 @@ function App() {
     }
   }
 
-
+  // Uses memoized(cashed) geoJson data to create the GeoJSON component 
   const GeoJsonComponent = useMemo(()=>{
     return geoJson?<GeoJSON key={key} data={geoJson} style = {myStyle} onEachFeature={onEachFeature}></GeoJSON>:null;
-  },[geoJson, newName])
+  },[geoJson])
 
   return (
     <div>
