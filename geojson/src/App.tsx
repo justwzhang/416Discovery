@@ -13,7 +13,7 @@ import MapZoom from './components/mapZoomComponent';
 function App() {
   // const [geoFile, setGeoFile] = useState<File>();
   const [geoJson, setGeoJson] = useState<GeoJsonObject|FeatureCollection>();
-  const [newName, setName] = useState<String>("")
+  const [newName, setName] = useState<String>(" ")
   const myStyle = {
     fillColor: 'yellow',
     fillOpacity: 1,
@@ -34,7 +34,7 @@ function App() {
         }
       },
       dblclick: (event:any)=>{//todo
-          // console.log(event.target)//event.target = layer
+          console.log(event.target)//event.target = layer
           let currentLayer = event.target;
           let currentName = currentLayer.feature.properties.name;
           let tempGeoJson = {...geoJson};//TODO make deep copy
@@ -60,7 +60,11 @@ function App() {
   }
 
   function handleChange(event:any){
-    setName(event.target.value);
+    if(event.target.value == ""){
+      setName(" ");
+    }else{
+      setName(event.target.value);
+    }
   }
 
   function test(event:any){
@@ -69,7 +73,7 @@ function App() {
 
   const GeoJsonComponent = useMemo(()=>{
     return geoJson?<GeoJSON data={geoJson} style = {myStyle} onEachFeature={onEachFeature}></GeoJSON>:null;
-  },[geoJson])
+  },[geoJson, newName])
 
   return (
     <div>
@@ -88,7 +92,7 @@ function App() {
           GeoJsonComponent
         }
       </MapContainer>
-      <TextField label="Outlined" variant="outlined" style={{width: "100%"}} onChange={handleChange}/>
+      <TextField label="Change Region Name" variant="outlined" style={{width: "100%"}} onChange={handleChange}/>
     </div>
   );
 }
