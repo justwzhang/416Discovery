@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { Button } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 // import L from "leaflet";
 import { GeoJsonObject } from 'geojson';
 import { Opacity } from '@mui/icons-material';
@@ -11,50 +11,45 @@ import "leaflet/dist/leaflet.css";
 
 function App() {
   const [geoFile, setGeoFile] = useState<File>();
-  const [geoJson, setGeoJson] = useState<GeoJsonObject>(); // GeoJsonObject | GeoJsonObject[]
+  const [geoJson, setGeoJson] = useState<GeoJsonObject>();
+  const [newName, setName] = useState<String>("")
   const myStyle = {
     fillColor: 'yellow',
     fillOpacity: 1,
     color:'black',
     weight: 1
   };
-  // const [map, setMap] = useState<L.Map>();
-  
 
   function onEachFeature(feature:any, layer:any){
-    console.log(layer)
     const countryName = feature.properties.name;
     layer.bindPopup(countryName);
-    // console.log(countryName);
+    console.log(layer)
+    layer._events.click.splice(0,1);
+    console.log(layer._events.click);
     layer.on({
       click: (event:any)=>{
-        console.log("click")
+        if(event.originalEvent.shiftKey == true){
+          event.target._openPopup(event);
+        }
       },
-      mouseOver: (event:any)=>{
-        event.target.setStyle({
-          color: "blue",
-          fillColor: "black"
-        });
+      dblclick: (event:any)=>{
+          console.log(event.target)//event.target = layer
+          let currentLayer = event.target;
+          currentLayer.feature.properties.name = newName;
+          currentLayer.bindPopup(newName);
       }
     })
   }
 
-  // function loadMap(){
-    // let map = L.map('map').setView([0,0], 0)
-    // console.log(geoJson?.features);
-    // console.log(1)
-    
-    // L.geoJSON(geoJson, {
-    //   style: myStyle,
-    //   onEachFeature: onEachFeature,
-    //   }).addTo(map)
-  // }
-
   async function handelFile(selectorFiles:FileList){
     setGeoFile(selectorFiles[0])
     setGeoJson(JSON.parse(await selectorFiles[0].text()));
-    // setMap();
   }
+
+  function handleChange(event:any){
+    setName(event.target.value);
+  }
+
 
   return (
     <div>
@@ -62,14 +57,15 @@ function App() {
         Upload GeoJson File
         <input hidden accept="file" type="file" onChange={(e)=>handelFile(e.target.files!)}/>
       </Button>
-      {/* <Button onClick={()=>loadMap()}>
-        View Map
-      </Button> */}
+      
+
+
       <MapContainer style={{ height: "70vh" }} center={[0, 0]} zoom={0} zoomControl={true}>
         {
           geoJson?<GeoJSON data={geoJson} style = {myStyle} onEachFeature={onEachFeature}></GeoJSON>:null
         }
       </MapContainer>
+      <TextField label="Outlined" variant="outlined" style={{width: "100%"}} onChange={handleChange}/>
     </div>
   );
 }
