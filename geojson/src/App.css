@@ -29,10 +29,10 @@
 }
 
 #map{
-  outline: 2px dashed blue;
-  background-color: #AACDFF;
+  /* outline: 2px dashed blue; */
+  /* background-color: #AACDFF; */
   margin: auto;
-  height: 300px;
+  height: 400px;
   width: 500px;
 }
 
