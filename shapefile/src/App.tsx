@@ -1,7 +1,7 @@
 import JSZip from 'jszip';
 import shp from 'shpjs';
 import React, { useState } from 'react';
-import { MapContainer, GeoJSON } from 'react-leaflet'
+import { MapContainer, GeoJSON, TileLayer } from 'react-leaflet'
 import mapData from './test_data/countries.json'
 import ShapeFile from './Components/ShapeFile';
 import "leaflet/dist/leaflet.css";
@@ -20,7 +20,7 @@ function App() {
     let reader = new FileReader();
     let files = e.target.files;
 
-    // __________LOAD SHP AND DBF FILE
+    // __________LOAD SHP AND DBF FILE SWITCH
     // let zip = new JSZip();
     // Array.from(files).forEach((f: any) => {
     //   zip.file(f.name, f);
@@ -32,7 +32,7 @@ function App() {
     //     setGeoData(buffer.target.result);
     //   }
     // });
-    // __________LOAD SHP AND DBF FILE
+    // __________LOAD SHP AND DBF FILE SWITCH
 
     // __________LOAD ZIP FILE SWITCH
     reader.readAsArrayBuffer(files[0]);
@@ -42,15 +42,32 @@ function App() {
     // __________LOAD ZIP FILE SWITCH
   }
   function onEachCountry(country: any, layer: any) {
-    const countryName = country.properties.ADMIN;
-    console.log(countryName);
-    layer.bindPopup(countryName);
+    // const countryName = country.properties.NAME_1;
+    // layer.bindPopup(countryName);
 
-    layer.options.fillOpacity = Math.random();
+    layer.options.fillOpacity = Math.random() * 0.4;
 
     layer.on({
       click: () => {
-        console.log('clicked');
+
+      },
+      mouseover: (e: any) => {
+        const layer = e.target;
+        layer.setStyle({
+          fillColor: "red",
+          fillOpacity: 0.7,
+          weight: 2,
+          color: "black",
+        })
+      },
+      mouseout: (e: any) => {
+        const layer = e.target;
+        layer.setStyle({
+          fillOpacity: Math.random() * 0.4,
+          weight: 1,
+          color: 'black',
+          fillColor: 'yellow'
+        });
       },
     });
   }
@@ -66,6 +83,10 @@ function App() {
             style={countryStyle}
             data={(mapData as any).features}
             onEachFeature={onEachCountry}/> */}
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
             <ShapeFile data={geoData} style={countryStyle} onEachFeature={onEachCountry} />
           </MapContainer> : null
       }
