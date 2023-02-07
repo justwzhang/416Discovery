@@ -6,6 +6,8 @@ import { Button } from '@mui/material';
 import { GeoJsonObject } from 'geojson';
 import { Opacity } from '@mui/icons-material';
 import { MapContainer, GeoJSON, TileLayer, LayersControl } from 'react-leaflet'
+import "leaflet/dist/leaflet.css";
+
 
 function App() {
   const [geoFile, setGeoFile] = useState<File>();
