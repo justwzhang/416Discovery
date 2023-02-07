@@ -1,26 +1,97 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import JSZip from 'jszip';
+import shp from 'shpjs';
+import React, { useState } from 'react';
+import { MapContainer, GeoJSON, TileLayer } from 'react-leaflet'
+import mapData from './test_data/countries.json'
+import ShapeFile from './Components/ShapeFile';
+import "leaflet/dist/leaflet.css";
 
 function App() {
+  const [geoData, setGeoData] = useState<ArrayBuffer | null>(null);
+
+  const countryStyle = {
+    fillColor: "yellow",
+    fillOpacity: 1,
+    color: "black",
+    weight: 1,
+  }
+
+  function handleFile(e: any) {
+    let reader = new FileReader();
+    let files = e.target.files;
+
+    // __________LOAD SHP AND DBF FILE SWITCH
+    // let zip = new JSZip();
+    // Array.from(files).forEach((f: any) => {
+    //   zip.file(f.name, f);
+    // });
+
+    // zip.generateAsync({ type: 'blob' }).then((content) => {
+    //   reader.readAsArrayBuffer(content);
+    //   reader.onload = function (buffer: any) {
+    //     setGeoData(buffer.target.result);
+    //   }
+    // });
+    // __________LOAD SHP AND DBF FILE SWITCH
+
+    // __________LOAD ZIP FILE SWITCH
+    reader.readAsArrayBuffer(files[0]);
+    reader.onload = function (buffer: any) {
+      setGeoData(buffer.target.result);
+    }
+    // __________LOAD ZIP FILE SWITCH
+  }
+  function onEachCountry(country: any, layer: any) {
+    // const countryName = country.properties.NAME_1;
+    // layer.bindPopup(countryName);
+
+    layer.options.fillOpacity = Math.random() * 0.4;
+
+    layer.on({
+      click: () => {
+
+      },
+      mouseover: (e: any) => {
+        const layer = e.target;
+        layer.setStyle({
+          fillColor: "red",
+          fillOpacity: 0.7,
+          weight: 2,
+          color: "black",
+        })
+      },
+      mouseout: (e: any) => {
+        const layer = e.target;
+        layer.setStyle({
+          fillOpacity: Math.random() * 0.4,
+          weight: 1,
+          color: 'black',
+          fillColor: 'yellow'
+        });
+      },
+    });
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <div >
+        <input type="file" onChange={(e) => handleFile(e)} className="inputfile" multiple />
+      </div>{
+        geoData ?
+          <MapContainer style={{ height: "80vh" }} center={[42.09618442380296, -71.5045166015625]} zoom={7}>
+            {/* <GeoJSON
+            style={countryStyle}
+            data={(mapData as any).features}
+            onEachFeature={onEachCountry}/> */}
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <ShapeFile data={geoData} style={countryStyle} onEachFeature={onEachCountry} />
+          </MapContainer> : null
+      }
     </div>
-  );
+  )
 }
 
 export default App;
