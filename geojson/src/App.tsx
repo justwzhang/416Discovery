@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import './App.css';
 import { Button, TextField } from '@mui/material';
 import { GeoJsonObject, FeatureCollection } from 'geojson';
@@ -8,11 +8,10 @@ import MapZoom from './components/mapZoomComponent';
 
 
 function App() {
-  // const [geoFile, setGeoFile] = useState<File>();
-  const [oldGeoJson, setOldGeoJson] = useState<GeoJsonObject|FeatureCollection>();
   const [geoJson, setGeoJson] = useState<GeoJsonObject|FeatureCollection>();
-  const [newName, setName] = useState<String>(" ")
+  const [newName, setName] = useState<String>(" ");
   const [index, setIndex] = useState<number>(-1);
+  const [key, setKey] = useState<number>(0);
   const myStyle = {
     fillColor: 'yellow',
     fillOpacity: 1,
@@ -38,24 +37,17 @@ function App() {
             if((geoJson as any)?.features[i].properties.name == currentName){
               setIndex(i);
               setName(currentName);
-              // console.log(currentName);
             }
           }
-          // currentLayer.bindPopup(newName);
       }
     })
   }
 
   async function handleFile(selectorFiles:FileList){
-    // setGeoFile(selectorFiles[0])
-    if(geoJson != undefined){
-      setOldGeoJson(geoJson);
-    }
     let jsonStringTemp = await selectorFiles[0].text()
     let jsonTemp = JSON.parse(jsonStringTemp)
-    // console.log(jsonTemp);
+    setKey(Math.random);
     setGeoJson(jsonTemp);
-    test();
   }
 
   function handleChange(event:any){
@@ -67,33 +59,20 @@ function App() {
   }
 
   function handleNameChange(event:any){
-
     if(event.key == "Enter" && index != -1){
-      // console.log(event.key);
-      let tempGeoJson = JSON.parse(JSON.stringify(geoJson));//TODO make deep copy
+      let tempGeoJson = JSON.parse(JSON.stringify(geoJson));
       console.log(index);
       console.log(newName);
       (tempGeoJson as any)!.features[index].properties.name = newName;
       setGeoJson(tempGeoJson);
+      setKey(Math.random);
     }
   }
 
 
-  function test(){
-    // console.log(geoJson);
-    // console.log(oldGeoJson);
-    // console.log(geoJson == oldGeoJson);
-    console.log(index);
-    console.log(geoJson)
-    if(index != -1)
-    console.log((geoJson as any)!.features[index].properties.name)
-  }
-
   const GeoJsonComponent = useMemo(()=>{
-    return geoJson?<GeoJSON data={geoJson} style = {myStyle} onEachFeature={onEachFeature}></GeoJSON>:null;
+    return geoJson?<GeoJSON key={key} data={geoJson} style = {myStyle} onEachFeature={onEachFeature}></GeoJSON>:null;
   },[geoJson, newName])
-
-  // const GeoJsonComponent = geoJson?<GeoJSON data={geoJson} style = {myStyle} onEachFeature={onEachFeature}></GeoJSON>:null;
 
   return (
     <div>
@@ -101,18 +80,18 @@ function App() {
         Upload GeoJson File
         <input hidden accept="file" type="file" onChange={(e)=>handleFile(e.target.files!)}/>
       </Button>
-      <Button onClick={test}>
-        Test
-      </Button>
       <MapContainer style={{ height: "70vh", background: "#AACDFF"}} center={[0, 0]} zoom={0} zoomControl={true}>
         <MapZoom/>
         {GeoJsonComponent}
       </MapContainer>
       <TextField label="Change Region Name" variant="outlined" value={newName} style={{width: "100%"}} onChange={handleChange} onKeyDown={handleNameChange}/>
       <div>
-        <h4>How To Use</h4>
+         How To Use<br/>
          To view names of regions, hold ctrl and click on the region.<br/>
-         To change the name type in the textbox first then double click on a region to change its name to the written text. View the name again to see the change.
+         To change the name:<br/>
+         1. Double click on a region<br/>
+         2. Change name in text box<br/>
+         3. Hit enter then check name to see the change. Any change after a double click will affect the selected region.
       </div>
 
     </div>
