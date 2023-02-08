@@ -46,9 +46,42 @@ function App() {
     // layer.bindPopup(countryName);
 
     layer.options.fillOpacity = Math.random() * 0.4;
+    var selected: any[] = [];
+    var mergebt = document.getElementById("mergebt") as HTMLButtonElement;
 
     layer.on({
-      click: () => {
+      click: (e: any) => {
+        const layer = e.target;
+        var map = layer;
+
+        //color selected subregion
+        if (selected.length > 0) {
+          selected.pop();
+          layer.setStyle({
+            fillOpacity: Math.random() * 0.4,
+            weight: 1,
+            color: 'black',
+            fillColor: 'yellow'
+          });
+          console.log(selected);
+        } else {
+          selected.push(map);
+          layer.setStyle({
+            fillColor: "red",
+            fillOpacity: 0.7,
+            weight: 2,
+            color: "black",
+          });
+          console.log(selected);
+          map = {};
+        }
+
+        //enable or disable merge button depending on selection
+        if (selected.length > 0) {
+          mergebt.disabled = false;
+        } else {
+          mergebt.disabled = true;
+        }
 
       },
       mouseover: (e: any) => {
@@ -58,18 +91,26 @@ function App() {
           fillOpacity: 0.7,
           weight: 2,
           color: "black",
-        })
+        });
       },
       mouseout: (e: any) => {
         const layer = e.target;
-        layer.setStyle({
-          fillOpacity: Math.random() * 0.4,
-          weight: 1,
-          color: 'black',
-          fillColor: 'yellow'
-        });
+        if (selected.length > 0) {} 
+        else {
+          layer.setStyle({
+            fillOpacity: Math.random() * 0.4,
+            weight: 1,
+            color: 'black',
+            fillColor: 'yellow'
+          });
+        }
       },
     });
+  }
+
+
+  function Merge() {
+
   }
 
   return (
@@ -90,6 +131,7 @@ function App() {
             <ShapeFile data={geoData} style={countryStyle} onEachFeature={onEachCountry} />
           </MapContainer> : null
       }
+      <button id="mergebt" disabled onClick={Merge}>Merge</button>
     </div>
   )
 }
