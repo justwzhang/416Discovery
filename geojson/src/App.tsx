@@ -2,10 +2,10 @@ import { useMemo, useState } from 'react';
 import './App.css';
 import { Button, TextField } from '@mui/material';
 import { GeoJsonObject, FeatureCollection } from 'geojson';
-import { MapContainer, GeoJSON } from 'react-leaflet'
+import { MapContainer, GeoJSON, Marker, Polygon } from 'react-leaflet'
 import "leaflet/dist/leaflet.css";
 import MapZoom from './components/mapZoomComponent';
-
+import L from 'leaflet';
 
 function App() {
   // The state variables used
@@ -36,7 +36,7 @@ function App() {
         }
       },
       dblclick: (event:any)=>{
-          console.log(event.target)//event.target = layer
+          // console.log(event.target)//event.target = layer
           let currentLayer = event.target;
           let currentName = currentLayer.feature.properties.name;
           for(let i=0; i<(geoJson as any)?.features.length; i++){
@@ -45,6 +45,24 @@ function App() {
               setName(currentName);
             }
           }
+      },
+      mouseover: (e: any) => {
+        const layer = e.target;
+        layer.setStyle({
+          fillColor: "red",
+          fillOpacity: 0.7,
+          weight: 2,
+          color: "black",
+        })
+      },
+      mouseout: (e: any) => {
+        const layer = e.target;
+        layer.setStyle({
+          fillColor: 'yellow',
+          fillOpacity: 1,
+          color:'black',
+          weight: 1
+        });
       }
     })
   }
@@ -55,6 +73,7 @@ function App() {
     let jsonTemp = JSON.parse(jsonStringTemp)
     setKey(Math.random);
     setGeoJson(jsonTemp);
+    setIndex(-1);
   }
 
   // The handler for name changing from the textbox
@@ -83,6 +102,18 @@ function App() {
     return geoJson?<GeoJSON key={key} data={geoJson} style = {myStyle} onEachFeature={onEachFeature}></GeoJSON>:null;
   },[geoJson])
 
+  // Uses memoized(cashed) geoJson data to create the markers for the names
+  const nameMarkers = useMemo(()=>{
+    if(geoJson == undefined) return <></>;
+    return (<>{
+      (geoJson as any)?.features.map((list:any)=>{
+        return(
+          <Marker position = {[list.properties.label_y, list.properties.label_x]} icon={L.divIcon({html:list.properties.name, className:"Name-Marker"})}/>
+        );
+      })
+    }</>);
+  }, [geoJson])
+
   return (
     <div>
       <Button variant="contained" component="label">
@@ -92,6 +123,7 @@ function App() {
       <MapContainer style={{ height: "70vh", background: "#AACDFF"}} center={[0, 0]} zoom={0} zoomControl={true}>
         <MapZoom/>
         {GeoJsonComponent}
+        {nameMarkers}
       </MapContainer>
       <TextField label="Change Region Name" variant="outlined" value={newName} style={{width: "100%"}} onChange={handleChange} onKeyDown={handleNameChange}/>
       <div>
