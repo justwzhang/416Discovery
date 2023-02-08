@@ -35,8 +35,7 @@ function App() {
           event.target._openPopup(event);
         }
       },
-      dblclick: (event:any)=>{
-          // console.log(event.target)//event.target = layer
+      dblclick: (event:any)=>{//target = layer
           let currentLayer = event.target;
           let currentName = currentLayer.feature.properties.name;
           for(let i=0; i<(geoJson as any)?.features.length; i++){
@@ -74,6 +73,7 @@ function App() {
     setKey(Math.random);
     setGeoJson(jsonTemp);
     setIndex(-1);
+    setName("");
   }
 
   // The handler for name changing from the textbox
@@ -89,8 +89,6 @@ function App() {
   function handleNameChange(event:any){
     if(event.key == "Enter" && index != -1){
       let tempGeoJson = JSON.parse(JSON.stringify(geoJson));
-      console.log(index);
-      console.log(newName);
       (tempGeoJson as any)!.features[index].properties.name = newName;
       setGeoJson(tempGeoJson);
       setKey(Math.random);
@@ -106,9 +104,9 @@ function App() {
   const nameMarkers = useMemo(()=>{
     if(geoJson == undefined) return <></>;
     return (<>{
-      (geoJson as any)?.features.map((list:any)=>{
+      (geoJson as any)?.features.map((list:any, index:number)=>{
         return(
-          <Marker position = {[list.properties.label_y, list.properties.label_x]} icon={L.divIcon({html:list.properties.name, className:"Name-Marker"})}/>
+          <Marker key={index} position = {[list.properties.label_y, list.properties.label_x]} icon={L.divIcon({html:list.properties.name, className:"Name-Marker"})}/>
         );
       })
     }</>);
