@@ -42,8 +42,8 @@ function App() {
     // __________LOAD ZIP FILE SWITCH
   }
   function onEachCountry(country: any, layer: any) {
-    // const countryName = country.properties.NAME_1;
-    // layer.bindPopup(countryName);
+    const countryName = country.properties.NAME_1;
+    layer.bindPopup(countryName);
 
     layer.options.fillOpacity = Math.random() * 0.4;
     var selected: any[] = [];
@@ -56,6 +56,7 @@ function App() {
 
         //color selected subregion
         if (selected.length > 0) {
+          map.closePopup();
           selected.pop();
           layer.setStyle({
             fillOpacity: Math.random() * 0.4,
@@ -95,7 +96,7 @@ function App() {
       },
       mouseout: (e: any) => {
         const layer = e.target;
-        if (selected.length > 0) {} 
+        if (selected.length > 0) { }
         else {
           layer.setStyle({
             fillOpacity: Math.random() * 0.4,
