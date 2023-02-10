@@ -10,7 +10,6 @@ import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import 'leaflet/dist/leaflet.css';
 import TLayer from './Components/TLayer';
-import { EditControl } from 'react-leaflet-draw';
 
 function App() {
   const [geoData, setGeoData] = useState<ArrayBuffer | null>(null);
@@ -96,22 +95,7 @@ function App() {
           // @ts-ignore
           editable={true}
         >
-          {/* <GeoJSON
-            style={countryStyle}
-            data={(mapData as any).features}
-            onEachFeature={onEachCountry}/> */}
-          {/* <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <TLayer /> */}
-          {/* <FeatureGroup>
-            <EditControl
-              position="topright"
-              draw={{
-                rectangle: false,
-              }}
-            /> */}
+          <TLayer />
           <ShapeFile
             data={geoData}
             style={countryStyle}
