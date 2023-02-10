@@ -1,14 +1,16 @@
 import JSZip from 'jszip';
 import shp from 'shpjs';
-import React, { useState } from 'react';
-import { MapContainer, GeoJSON, TileLayer, useMap } from 'react-leaflet';
+import React, { useState, useRef } from 'react';
+import { MapContainer, FeatureGroup, TileLayer } from 'react-leaflet';
 import mapData from './test_data/countries.json';
 import ShapeFile from './Components/ShapeFile';
 import L from 'leaflet';
+import 'leaflet-editable';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import 'leaflet/dist/leaflet.css';
 import TLayer from './Components/TLayer';
+import { EditControl } from 'react-leaflet-draw';
 
 function App() {
   const [geoData, setGeoData] = useState<ArrayBuffer | null>(null);
@@ -53,7 +55,7 @@ function App() {
 
     layer.on({
       click: () => {
-        console.log(layer);
+        console.log(layer.getLatLngs());
       },
       mouseover: (e: any) => {
         const layer = e.target;
@@ -91,6 +93,8 @@ function App() {
           style={{ height: '80vh' }}
           center={[42.09618442380296, -71.5045166015625]}
           zoom={7}
+          // @ts-ignore
+          editable={true}
         >
           {/* <GeoJSON
             style={countryStyle}
@@ -101,11 +105,19 @@ function App() {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           /> */}
           <TLayer />
+          {/* <FeatureGroup>
+            <EditControl
+              position="topright"
+              draw={{
+                rectangle: false,
+              }}
+            /> */}
           <ShapeFile
             data={geoData}
             style={countryStyle}
             onEachFeature={onEachCountry}
           />
+          {/* </FeatureGroup> */}
         </MapContainer>
       ) : null}
     </div>
