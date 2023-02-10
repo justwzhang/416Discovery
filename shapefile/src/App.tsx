@@ -8,12 +8,51 @@ import "leaflet/dist/leaflet.css";
 
 function App() {
   const [geoData, setGeoData] = useState<ArrayBuffer | null>(null);
+  const [propName, setPropName] = useState<any>(" ");
 
   const countryStyle = {
     fillColor: "yellow",
     fillOpacity: 1,
     color: "black",
     weight: 1,
+  }
+
+  function findPropName(properties: any) {
+    let tempPropName = properties["name"];
+    if (tempPropName != undefined) {
+      setPropName("name");
+      return;
+    }
+    tempPropName = properties["NAME"];
+    if (tempPropName != undefined) {
+      setPropName("NAME");
+      return;
+    }
+    tempPropName = properties["NAME_1"];
+    if (tempPropName != undefined) {
+      setPropName("NAME_1");
+      return;
+    }
+    tempPropName = properties["Name"];
+    if (tempPropName != undefined) {
+      setPropName("Name");
+      return;
+    }
+    tempPropName = properties["admin"];
+    if (tempPropName != undefined) {
+      setPropName("admin");
+      return;
+    }
+    tempPropName = properties["ADMIN"];
+    if (tempPropName != undefined) {
+      setPropName("ADMIN");
+      return;
+    }
+    tempPropName = properties["Admin"];
+    if (tempPropName != undefined) {
+      setPropName("Admin");
+      return;
+    }
   }
 
   function handleFile(e: any) {
@@ -41,14 +80,50 @@ function App() {
     }
     // __________LOAD ZIP FILE SWITCH
   }
+
   function onEachCountry(country: any, layer: any) {
-    // const countryName = country.properties.NAME_1;
-    // layer.bindPopup(countryName);
+    findPropName(country.properties);
+    const countryName = country.properties[propName];
+    layer.bindPopup(countryName);
 
     layer.options.fillOpacity = Math.random() * 0.4;
+    var selected: any[] = [];
+    var mergebt = document.getElementById("mergebt") as HTMLButtonElement;
 
     layer.on({
-      click: () => {
+      click: (e: any) => {
+        const layer = e.target;
+        var map = layer;
+
+        //color selected subregion
+        if (selected.length > 0) {
+          map.closePopup();
+          selected.pop();
+          layer.setStyle({
+            fillOpacity: Math.random() * 0.4,
+            weight: 1,
+            color: 'black',
+            fillColor: 'yellow'
+          });
+          console.log(selected);
+        } else {
+          selected.push(map);
+          layer.setStyle({
+            fillColor: "red",
+            fillOpacity: 0.7,
+            weight: 2,
+            color: "black",
+          });
+          console.log(selected);
+          map = {};
+        }
+
+        //enable or disable merge button depending on selection
+        if (selected.length > 0) {
+          mergebt.disabled = false;
+        } else {
+          mergebt.disabled = true;
+        }
 
       },
       mouseover: (e: any) => {
@@ -58,18 +133,26 @@ function App() {
           fillOpacity: 0.7,
           weight: 2,
           color: "black",
-        })
+        });
       },
       mouseout: (e: any) => {
         const layer = e.target;
-        layer.setStyle({
-          fillOpacity: Math.random() * 0.4,
-          weight: 1,
-          color: 'black',
-          fillColor: 'yellow'
-        });
+        if (selected.length > 0) { }
+        else {
+          layer.setStyle({
+            fillOpacity: Math.random() * 0.4,
+            weight: 1,
+            color: 'black',
+            fillColor: 'yellow'
+          });
+        }
       },
     });
+  }
+
+
+  function Merge() {
+
   }
 
   return (
@@ -90,6 +173,7 @@ function App() {
             <ShapeFile data={geoData} style={countryStyle} onEachFeature={onEachCountry} />
           </MapContainer> : null
       }
+      <button id="mergebt" disabled onClick={Merge}>Merge</button>
     </div>
   )
 }
