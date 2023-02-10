@@ -8,12 +8,51 @@ import "leaflet/dist/leaflet.css";
 
 function App() {
   const [geoData, setGeoData] = useState<ArrayBuffer | null>(null);
+  const [propName, setPropName] = useState<any>(" ");
 
   const countryStyle = {
     fillColor: "yellow",
     fillOpacity: 1,
     color: "black",
     weight: 1,
+  }
+
+  function findPropName(properties: any) {
+    let tempPropName = properties["name"];
+    if (tempPropName != undefined) {
+      setPropName("name");
+      return;
+    }
+    tempPropName = properties["NAME"];
+    if (tempPropName != undefined) {
+      setPropName("NAME");
+      return;
+    }
+    tempPropName = properties["NAME_1"];
+    if (tempPropName != undefined) {
+      setPropName("NAME_1");
+      return;
+    }
+    tempPropName = properties["Name"];
+    if (tempPropName != undefined) {
+      setPropName("Name");
+      return;
+    }
+    tempPropName = properties["admin"];
+    if (tempPropName != undefined) {
+      setPropName("admin");
+      return;
+    }
+    tempPropName = properties["ADMIN"];
+    if (tempPropName != undefined) {
+      setPropName("ADMIN");
+      return;
+    }
+    tempPropName = properties["Admin"];
+    if (tempPropName != undefined) {
+      setPropName("Admin");
+      return;
+    }
   }
 
   function handleFile(e: any) {
@@ -41,8 +80,10 @@ function App() {
     }
     // __________LOAD ZIP FILE SWITCH
   }
+
   function onEachCountry(country: any, layer: any) {
-    const countryName = country.properties.NAME_1;
+    findPropName(country.properties);
+    const countryName = country.properties[propName];
     layer.bindPopup(countryName);
 
     layer.options.fillOpacity = Math.random() * 0.4;
