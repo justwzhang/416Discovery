@@ -14,7 +14,6 @@ export default function ShapeFile(props: any) {
     (async () => {
       setGeoJSONData(await shp(props.data));
       setKey(Math.random());
-      L.geoJSON(geoJSONData).addTo(map);
     })();
   }, [props.data]);
 
