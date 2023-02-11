@@ -1,10 +1,9 @@
 import JSZip from 'jszip';
 import shp from 'shpjs';
 
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
+import useState from 'react-usestateref';
 import { MapContainer, FeatureGroup, TileLayer } from 'react-leaflet';
-import mapData from './test_data/countries.json';
-
 import ShapeFile from './Components/ShapeFile';
 import L from 'leaflet';
 import 'leaflet-editable';
@@ -15,11 +14,10 @@ import TLayer from './Components/TLayer';
 
 function App() {
   const [geoData, setGeoData] = useState<ArrayBuffer | null>(null);
-  const [propName, setPropName] = useState<any>(" ");
+  const [propName, setPropName, propNameRef] = useState<any>(" ");
 
   const countryStyle = {
     fillColor: 'yellow',
-    fillOpacity: 1,
     color: 'black',
     weight: 1,
   };
@@ -90,11 +88,13 @@ function App() {
   }
 
   function onEachCountry(country: any, layer: any) {
+    layer.options.fillOpacity = Math.random() * 0.4;
+
     findPropName(country.properties);
-    const countryName = country.properties[propName];
+    console.log(propNameRef.current);
+    const countryName = country.properties[propNameRef.current];
     layer.bindPopup(countryName);
 
-    layer.options.fillOpacity = Math.random() * 0.4;
     var selected: any[] = [];
     var mergebt = document.getElementById("mergebt") as HTMLButtonElement;
 
