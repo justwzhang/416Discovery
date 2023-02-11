@@ -170,7 +170,7 @@ function App() {
         <input type="file" onChange={(e) => handleFile(e)} className="inputfile" multiple />
       </div>{
         geoData ?
-          <MapContainer style={{ height: "80vh" }} center={[42.09618442380296, -71.5045166015625]} zoom={7} editable={true}>
+          <MapContainer style={{ height: "80vh" }} center={[42.09618442380296, -71.5045166015625]} zoom={7}>
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
