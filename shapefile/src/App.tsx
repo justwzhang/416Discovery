@@ -14,6 +14,8 @@ function App() {
   const [geoData, setGeoData] = useState<ArrayBuffer | null>(null);
   const [newName, setName] = useState<String>(" ");
   const [propName, setPropName] = useState<any>(" ");
+  const [union, setUnion] = useState<any>();
+  const [removeProp, setRemoveProp] = useState<any>();
 
   const countryStyle = {
     fillColor: "yellow",
@@ -161,14 +163,21 @@ function App() {
   }
 
 
-  function Merge() {
+  function Merge(e:any) {
     for (var i = 0; i < selected.length; ++i){
       if(i == 0) {
         var unions = selected[i].toGeoJSON();
+        // console.log(selected[i])
+        setRemoveProp(selected[i].feature.properties);
       } else {
         unions = turf.union(unions, selected[i].toGeoJSON());
+        // console.log(selected[i].feature.properties);
+        unions.properties = selected[i].feature.properties!;
       }
     }
+    console.log(unions)
+    setUnion(unions);
+    
   }
 
   function handleChange(e:any) {
@@ -201,10 +210,10 @@ function App() {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <ShapeFile data={geoData} style={countryStyle} onEachFeature={onEachCountry} />
+            <ShapeFile data={geoData} union={union} removeProp={removeProp} propName={propName} style={countryStyle} onEachFeature={onEachCountry} />
           </MapContainer> : null
       }
-      <button id="mergebt" disabled onClick={Merge}>Merge</button>
+      <button id="mergebt" onClick={Merge}>Merge</button>
      <div className ="namebar">
      <table>
      <tr>
