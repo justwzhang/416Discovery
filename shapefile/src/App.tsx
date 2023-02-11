@@ -2,7 +2,6 @@ import JSZip from 'jszip';
 import shp from 'shpjs';
 import React, { useState } from 'react';
 import { MapContainer, GeoJSON, TileLayer } from 'react-leaflet'
-import mapData from './test_data/countries.json'
 import ShapeFile from './Components/ShapeFile';
 import "leaflet/dist/leaflet.css";
 
@@ -60,24 +59,24 @@ function App() {
     let files = e.target.files;
 
     // __________LOAD SHP AND DBF FILE SWITCH
-    // let zip = new JSZip();
-    // Array.from(files).forEach((f: any) => {
-    //   zip.file(f.name, f);
-    // });
+    let zip = new JSZip();
+    Array.from(files).forEach((f: any) => {
+      zip.file(f.name, f);
+    });
 
-    // zip.generateAsync({ type: 'blob' }).then((content) => {
-    //   reader.readAsArrayBuffer(content);
-    //   reader.onload = function (buffer: any) {
-    //     setGeoData(buffer.target.result);
-    //   }
-    // });
+    zip.generateAsync({ type: 'blob' }).then((content) => {
+      reader.readAsArrayBuffer(content);
+      reader.onload = function (buffer: any) {
+        setGeoData(buffer.target.result);
+      }
+    });
     // __________LOAD SHP AND DBF FILE SWITCH
 
     // __________LOAD ZIP FILE SWITCH
-    reader.readAsArrayBuffer(files[0]);
-    reader.onload = function (buffer: any) {
-      setGeoData(buffer.target.result);
-    }
+    // reader.readAsArrayBuffer(files[0]);
+    // reader.onload = function (buffer: any) {
+    //   setGeoData(buffer.target.result);
+    // }
     // __________LOAD ZIP FILE SWITCH
   }
 
@@ -162,10 +161,6 @@ function App() {
       </div>{
         geoData ?
           <MapContainer style={{ height: "80vh" }} center={[42.09618442380296, -71.5045166015625]} zoom={7}>
-            {/* <GeoJSON
-            style={countryStyle}
-            data={(mapData as any).features}
-            onEachFeature={onEachCountry}/> */}
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
