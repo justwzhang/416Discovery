@@ -1,20 +1,28 @@
 import JSZip from 'jszip';
 import shp from 'shpjs';
-import React, { useState } from 'react';
-import { MapContainer, GeoJSON, TileLayer } from 'react-leaflet'
+
+import React, { useState, useRef } from 'react';
+import { MapContainer, FeatureGroup, TileLayer } from 'react-leaflet';
+import mapData from './test_data/countries.json';
+
 import ShapeFile from './Components/ShapeFile';
-import "leaflet/dist/leaflet.css";
+import L from 'leaflet';
+import 'leaflet-editable';
+import '@geoman-io/leaflet-geoman-free';
+import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
+import 'leaflet/dist/leaflet.css';
+import TLayer from './Components/TLayer';
 
 function App() {
   const [geoData, setGeoData] = useState<ArrayBuffer | null>(null);
   const [propName, setPropName] = useState<any>(" ");
 
   const countryStyle = {
-    fillColor: "yellow",
+    fillColor: 'yellow',
     fillOpacity: 1,
-    color: "black",
+    color: 'black',
     weight: 1,
-  }
+  };
 
   function findPropName(properties: any) {
     let tempPropName = properties["name"];
@@ -73,6 +81,7 @@ function App() {
     // __________LOAD SHP AND DBF FILE SWITCH
 
     // __________LOAD ZIP FILE SWITCH
+
     // reader.readAsArrayBuffer(files[0]);
     // reader.onload = function (buffer: any) {
     //   setGeoData(buffer.target.result);
@@ -90,6 +99,7 @@ function App() {
     var mergebt = document.getElementById("mergebt") as HTMLButtonElement;
 
     layer.on({
+
       click: (e: any) => {
         const layer = e.target;
         var map = layer;
@@ -128,7 +138,7 @@ function App() {
       mouseover: (e: any) => {
         const layer = e.target;
         layer.setStyle({
-          fillColor: "red",
+          fillColor: 'red',
           fillOpacity: 0.7,
           weight: 2,
           color: "black",
@@ -160,17 +170,18 @@ function App() {
         <input type="file" onChange={(e) => handleFile(e)} className="inputfile" multiple />
       </div>{
         geoData ?
-          <MapContainer style={{ height: "80vh" }} center={[42.09618442380296, -71.5045166015625]} zoom={7}>
+          <MapContainer style={{ height: "80vh" }} center={[42.09618442380296, -71.5045166015625]} zoom={7} editable={true}>
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
+            <TLayer />
             <ShapeFile data={geoData} style={countryStyle} onEachFeature={onEachCountry} />
           </MapContainer> : null
       }
       <button id="mergebt" disabled onClick={Merge}>Merge</button>
     </div>
-  )
+  );
 }
 
 export default App;
